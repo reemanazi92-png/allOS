@@ -3,108 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <title>اختبار نظم التشغيل</title>
-
 <style>
-body{
-    margin:0;
-    font-family:"Segoe UI",Tahoma;
-    background:#eef2f7;
-}
-
-.container{
-    width:800px;
-    margin:40px auto;
-    background:white;
-    padding:40px;
-    border-radius:15px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.1);
-}
-
-h1{
-    text-align:center;
-    color:#1e3a5f;
-}
-
-input[type="text"]{
-    width:100%;
-    padding:12px;
-    border-radius:8px;
-    border:1px solid #ccc;
-    font-size:16px;
-}
-
-button{
-    padding:10px 20px;
-    border:none;
-    border-radius:8px;
-    background:#1e3a5f;
-    color:white;
-    font-size:14px;
-    cursor:pointer;
-}
-
-button:hover{
-    background:#162b47;
-}
-
-.question{
-    font-size:18px;
-    margin-bottom:15px;
-    font-weight:bold;
-}
-
-.answers label{
-    display:block;
-    padding:10px;
-    margin:8px 0;
-    border:1px solid #ddd;
-    border-radius:8px;
-    cursor:pointer;
-    transition:0.3s;
-}
-
-.answers label:hover{
-    background:#f2f6fb;
-}
-
-.progress-bar{
-    height:8px;
-    background:#ddd;
-    border-radius:5px;
-    margin-bottom:20px;
-}
-
-.progress{
-    height:8px;
-    background:#1e3a5f;
-    border-radius:5px;
-    width:0%;
-}
-
-.result{
-    text-align:center;
-    font-size:20px;
-    font-weight:bold;
-    margin-top:20px;
-}
+body{margin:0;font-family:"Segoe UI",Tahoma;background:#eef2f7;}
+.container{width:800px;margin:40px auto;background:white;padding:40px;border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
+h1{text-align:center;color:#1e3a5f;}
+input[type="text"]{width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;font-size:16px;}
+button{padding:10px 20px;border:none;border-radius:8px;background:#1e3a5f;color:white;font-size:14px;cursor:pointer;}
+button:hover{background:#162b47;}
+.question{font-size:18px;margin-bottom:15px;font-weight:bold;}
+.answers label{display:block;padding:10px;margin:8px 0;border:1px solid #ddd;border-radius:8px;cursor:pointer;transition:0.3s;}
+.answers label:hover{background:#f2f6fb;}
+.progress-bar{height:8px;background:#ddd;border-radius:5px;margin-bottom:20px;}
+.progress{height:8px;background:#1e3a5f;border-radius:5px;width:0%;}
+.result{text-align:center;font-size:20px;font-weight:bold;margin-top:20px;}
 </style>
 </head>
-
 <body>
-
-<div class="container" id="app">
+<div class="container">
     <h1>اختبار نظم التشغيل</h1>
-
     <div id="login">
         <input type="text" id="studentName" placeholder="أدخل اسمك">
         <br><br>
-        <button onclick="startExam()">بدء الاختبار</button>
+        <button id="startBtn">بدء الاختبار</button>
     </div>
+
+    <div id="quiz" style="display:none;">
+        <div class="progress-bar"><div class="progress" id="progress"></div></div>
+        <div class="question" id="questionText"></div>
+        <div class="answers" id="answersContainer"></div>
+        <br>
+        <button id="nextBtn">التالي</button>
+    </div>
+
+    <div id="result" style="display:none;"></div>
 </div>
 
 <script>
-
+// ===== الأسئلة (مثال صغير فقط، أضف كل أسئلتك) =====
 const quiz = [
+{question:"أي من المستخدمين ينتهي موجه الأوامر الخاص به بالرمز # ؟",answers:["root","المستخدم المحدود","المستخدم الضيف","المستخدم العادي"],correct:0},
+{question:"يستخدم الأمر mkdir لإنشاء الملفات في نظام لينكس",answers:["صح","خطأ"],correct:1},
+{question:"ينشئ هذا الأمر ملف جديد ويجعله في وضعية الكتابة",answers:["cat > a.txt","cat a.txt","LS","cp a.txt"],correct:0},
+{question:"من مميزات استخدام سطر الأوامر ؟",answers:["أسرع وأكثر مرونة","يتطلب مساحة تخزين أكثر","ذو واجهة رسومية","كفاءة منخفضة"],correct:0},
+{question:"يعد هذا النوع من الملفات مستودع لأنواع الملفات الأخرى ؟",answers:["ملفات الدليل","الملفات العامة","سطر الأوامر","نظام التشغيل"],correct:0},
+{question:"يتم منح حقوق الوصول إلى مستوى الجذر لأي مستخدم عادي ؟",answers:["صح","خطأ"],correct:1},
+{question:"نسخة مطورة من أمر Man أكثر تفصيلاً ؟",answers:["info","cat","cp","mv"],correct:0},
+{question:"تعتبر intel من أهم الشركات المصنعة لوحدة المعالجة المركزية",answers:["صح","خطأ"],correct:0},
+{question:"ملف يحتوي على كلمات المرور المشفرة لحسابات المستخدمين",answers:["ملف shadow","ملف group","وحدة المعالجة المركزية","وحدة الحساب والمنطق"],correct:0},
+{question:"من أمثلة المتصفحات المجانية",answers:["firefox","emile","youtube","whatsapp"],correct:0},
+{question:"أمر استخراج ملفات Zip",answers:["Unzip","Zip","rmdir","cd"],correct:0},
+{question:"ضغط الملفات يعني فقط تجميعها دون تقليل الحجم",answers:["صح","خطأ"],correct:1},
+{question:"عنوان فريد يُخصص لكل جهاز متصل بالشبكة",answers:["IP","MAN","WAN","LAN"],correct:0},
+{question:"توزيعة ديبيان من أقوى توزيعات لينكس",answers:["صح","خطأ"],correct:0},
+{question:"أمر نسخ الملفات",answers:["cp","mv","cat","ls"],correct:0},
+{question:"الحرف d في drwxrwxr-x يدل على دليل",answers:["صح","خطأ"],correct:0},
+{question:"متغير بيئة لمسارات البحث",answers:["PATH","HOME","LS","PRINTF"],correct:0},
+{question:"محرر أكواد لنظام macOS",answers:["Chocolat","Vim","Brackets","Emacs"],correct:0},
+{question:"محرر نصوص يدعم البريد وFTP",answers:["Emacs","Brackets","Eclipse","Vim"],correct:0},
+{question:"أذونات المالك في drwx-wx-rx",answers:["قراءة وكتابة وتنفيذ","قراءة فقط","كتابة فقط","تنفيذ فقط"],correct:0},
+{question:"ماهي البرامج مفتوحة المصدر؟",answers:["برامج تتاح للجميع بحرية الاستخدام والتعديل","برامج لا يمكن استعمالها","برامج مكافحة ضارة","برامج خبيثة"],correct:0},
+{question:"حرق الإسطوانات يعني نسخ البيانات إلى أقراص",answers:["صح","خطأ"],correct:0},
+{question:"شبكات تمتد عبر مساحات واسعة",answers:["WAN","LAN","MAN","IP"],correct:0},
+{question:"النظام الثنائي يعتمد على 0 و1",answers:["صح","خطأ"],correct:0},
+{question:"أمر عكس عرض الملف",answers:["tac","cat","cp","mv"],correct:0},
+{question:"النواة مسؤولة عن إدارة العتاد",answers:["صح","خطأ"],correct:0},
+{question:"أمر نقل ملف",answers:["mv","cp","cat","ls"],correct:0},
+{question:"وحدة المعالجة المركزية دماغ الحاسب",answers:["صح","خطأ"],correct:0},
+{question:"لينكس يتمتع بحرية التعديل",answers:["صح","خطأ"],correct:0},
+{question:"خيار ls لعرض المخفية",answers:["-a","-r","-l","-h"],correct:0},
+{question:"إنشاء ملف بواسطة أمر",answers:["Touch","tac","cp","mv"],correct:0},
+{question:"في لينكس كل شيء ملف",answers:["صح","خطأ"],correct:0},
+{question:"لينكس لا يعمل إلا على Apple",answers:["صح","خطأ"],correct:1},
+{question:"help يعرض معلومات المساعدة",answers:["صح","خطأ"],correct:0},
+{question:"مثال نظام مفتوح المصدر",answers:["Linux","Apple","Windows","mac os"],correct:0},
+{question:"عرض المسار الكامل",answers:["pwd","mkdir","rmdir","cp"],correct:0},
+{question:"الواجهة الرسومية مقابل سطر الأوامر",answers:["صح","خطأ"],correct:0},
+{question:"السلوك الافتراضي للأمر cd",answers:["ينتقل إلى مجلد المنزل (Home)","ينتقل إلى Root","يبقى","آخر مجلد"],correct:0},
+{question:"برامج مكافحة الفيروسات هدفها تنظيف البيانات المهملة",answers:["صح","خطأ"],correct:1},
+
+// ===== أنظمة التشغيل و Linux =====
+{question:"من هو مطور نواة Linux؟",answers:["Richard Stallman","Bill Gates","Linus Torvalds","Steve Jobs"],correct:2},
+{question:"في أي عام تم إصدار Linux لأول مرة؟",answers:["1985","1991","2001","1999"],correct:1},
+{question:"ماذا يُقصد بكلمة Kernel؟",answers:["واجهة المستخدم","مدير الملفات","نواة نظام التشغيل","مضاد فيروسات"],correct:2},
+{question:"أي من التالي يُعتبر توزيعة Linux؟",answers:["Windows","macOS","Ubuntu","MS-DOS"],correct:2},
+{question:"أي توزيعة تُعرف بالاستقرار الطويل للخوادم؟",answers:["Fedora","Debian","Manjaro","Solus"],correct:1},
+{question:"أي بيئة سطح مكتب في Linux؟",answers:["KDE","NTFS","FAT32","BIOS"],correct:0},
+{question:"الفرق بين البرمجيات الحرة ومفتوحة المصدر يتركز في:",answers:["السعر","الحقوق والحريات","نوع الجهاز","سرعة النظام"],correct:1},
+{question:"أي رخصة تُستخدم في Linux؟",answers:["MIT فقط","Apache فقط","GPL","Proprietary"],correct:2},
+{question:"Android مبني على نواة:",answers:["Windows","BSD","Linux","Solaris"],correct:2},
+{question:"نظام macOS مبني على:",answers:["Linux","BSD","MS-DOS","Android"],correct:1},
+
+// ===== أوامر Linux الأساسية =====
+{question:"الأمر المستخدم لعرض الملفات هو:",answers:["cd","ls","mv","cp"],correct:1},
+{question:"الخيار الذي يعرض الملفات المخفية مع ls هو:",answers:["-l","-h","-a","-r"],correct:2},
+{question:"الأمر المستخدم للانتقال بين المجلدات هو:",answers:["mv","cd","rm","pwd"],correct:1},
+{question:"ماذا يعني الرمز # في موجه الأوامر؟",answers:["مستخدم عادي","مستخدم ضيف","root","شبكة"],correct:2},
+{question:"الأمر لنسخ الملفات هو:",answers:["cp","mv","rm","cat"],correct:0},
+{question:"الأمر لنقل أو إعادة تسمية ملف:",answers:["cp","mv","ls","pwd"],correct:1},
+{question:"الأمر لحذف مجلد فارغ:",answers:["rm","del","rmdir","erase"],correct:2},
+{question:"الأمر لإنشاء مجلدات متداخلة دفعة واحدة:",answers:["mkdir -v","mkdir -p","mkdir -r","mkdir -a"],correct:1},
+{question:"الأمر لإنشاء ملف فارغ:",answers:["cat","touch","echo","nano"],correct:1},
+{question:"الأمر لعرض أول 10 أسطر من ملف:",answers:["tail","less","head","more"],correct:2},
+{question:"الأمر لعرض آخر 10 أسطر:",answers:["head","tail","cat","find"],correct:1},
+{question:"الأمر للبحث عن ملفات في النظام:",answers:["grep","find","whereis","locate"],correct:1},
+{question:"الأمر لمعرفة مسار أمر معين:",answers:["find","whereis","cp","chmod"],correct:1},
+{question:"الأمر لعرض دليل المساعدة:",answers:["help","man","info","جميع ما سبق"],correct:3},
+{question:"للخروج من man نضغط:",answers:["x","z","q","e"],correct:2},
+
+// ===== الصلاحيات والمستخدمين =====
+{question:"chmod يُستخدم لـ:",answers:["تغيير المالك","تغيير الصلاحيات","حذف مستخدم","ضغط ملف"],correct:1},
+{question:"chown يُستخدم لـ:",answers:["تغيير المالك","تغيير الاسم","ضغط","نسخ"],correct:0},
+{question:"rwx تعني:",answers:["قراءة فقط","قراءة وكتابة وتنفيذ","تنفيذ فقط","كتابة فقط"],correct:1},
+{question:"Sticky Bit يُستخدم غالباً مع:",answers:["/home","/tmp","/boot","/etc"],correct:1},
+{question:"الأمر لإضافة مستخدم جديد:",answers:["adduser","new","useradd فقط","passwd"],correct:0},
+{question:"الأمر لتغيير كلمة المرور:",answers:["chpass","passwd","password","usermod"],correct:1},
+{question:"sudo يُستخدم لـ:",answers:["تسجيل الخروج","تنفيذ أمر بصلاحيات root","حذف النظام","نسخ الملفات"],correct:1},
+{question:"SELinux يعتمد على:",answers:["DAC","MAC","FAT","NTFS"],correct:1},
+
+// ===== الضغط والأرشفة =====
+{question:"لإنشاء ملف tar فقط نستخدم:",answers:["tar -cvf","tar -xvf","zip","unzip"],correct:0},
+{question:"لفك ضغط tar.gz نستخدم:",answers:["tar -cvzf","tar -xvzf","unzip","gunzip فقط"],correct:1},
+{question:"الخيار z في tar يعني:",answers:["xz","zip","gzip","bzip"],correct:2},
+{question:"لفك ملف zip نستخدم:",answers:["unzip","zip -x","tar","rar"],correct:0},
+{question:"لإضافة كلمة مرور لملف zip نستخدم:",answers:["-r","-q","-e","-z"],correct:2},
+
+// ===== الشبكات والخدمات =====
+{question:"HTTP يُستخدم لـ:",answers:["نقل الملفات","تصفح الويب","البريد","SSH"],correct:1},
+{question:"SSH يُستخدم لـ:",answers:["اتصال آمن عن بعد","بريد إلكتروني","ضغط ملفات","حذف ملفات"],correct:0},
+{question:"DNS وظيفته:",answers:["تخزين ملفات","ترجمة أسماء النطاقات","حذف بيانات","حماية فيروسات"],correct:1},
+{question:"FTP يُستخدم لـ:",answers:["نقل الملفات","تصفح","ضغط","تشفير"],correct:0},
+
+// ===== الافتراضية والسحابة =====
+{question:"VirtualBox يُستخدم لـ:",answers:["حماية الجهاز","إنشاء آلة افتراضية","حذف النظام","ضغط الملفات"],correct:1},
+{question:"ملف تثبيت Linux غالباً يكون بصيغة:",answers:["exe","iso","dmg","zip"],correct:1},
+{question:"VDI تعني:",answers:["Virtual Disk Image","Virtual Data Internet","Visual Disk","Volume Data Image"],correct:0},
+{question:"IaaS تعني:",answers:["برنامج كخدمة","بنية تحتية كخدمة","منصة","بريد"],correct:1},
+{question:"SaaS تعني:",answers:["Software as a Service","System as a Service","Server as a Service","Security as a Service"],correct:0},
+
+// ===== أدوات وحماية =====
+{question:"أي برنامج مضاد فيروسات مجاني؟",answers:["Photoshop","Avira Free","VMware","MS Word"],correct:1},
+{question:"AdwCleaner يُستخدم لإزالة:",answers:["تعريفات","إعلانات ضارة","ضغط ملفات","نسخ ملفات"],correct:1},
+{question:"Malwarebytes يُستخدم لـ:",answers:["تحليل الشبكة","إزالة البرمجيات الخبيثة","ضغط","تحرير نصوص"],correct:1},
+
+// ===== أوامر متقدمة =====
+{question:"pipe يُستخدم لربط:",answers:["ملفين","مخرجات أمر بمدخلات أمر آخر","مجلدين","مستخدمين"],correct:1},
+{question:"الرمز المستخدم للـ pipe هو:",answers:["&","|",">","<"],correct:1},
+{question:"المتغير PATH يحتوي على:",answers:["أسماء المستخدمين","مسارات الأوامر التنفيذية","كلمات المرور","الشبكات"],correct:1},
+{question:"لعرض قيمة PATH نستخدم:",answers:["echo PATH","echo $PATH","show PATH","print PATH"],correct:1},
+{question:"الأمر env يُستخدم لـ:",answers:["حذف","عرض متغيرات البيئة","ضغط","نقل"],correct:1},
+{question:"الأمر cat يُستخدم لـ:",answers:["حذف ملف","عرض محتوى ملف","إنشاء مجلد","تغيير صلاحيات"],correct:1},
+{question:"الخيار -r في cp يعني:",answers:["قراءة","تكرار","نسخ مجلدات بشكل recursive","إعادة تسمية"],correct:2},
+{question:"الخيار -i في mv يعني:",answers:["إجباري","تفاعلي (يسأل قبل الاستبدال)","حذف","نسخ"],correct:1},
+{question:"الخيار -f في mv يعني:",answers:["فرض التنفيذ","بحث","ضغط","حفظ"],correct:0},
+{question:"الأمر less يُستخدم لـ:",answers:["حذف","عرض محتوى ملف صفحة صفحة","ضغط","نقل"],correct:1},
 
 {question:"أي من المستخدمين ينتهي موجه الأوامر الخاص به بالرمز # ؟",answers:["root","المستخدم المحدود","المستخدم الضيف","المستخدم العادي"],correct:0},
 {question:"يستخدم الأمر mkdir لإنشاء الملفات في نظام لينكس",answers:["صح","خطأ"],correct:1},
@@ -150,65 +201,58 @@ const quiz = [
 
 let current = 0;
 let score = 0;
+let studentName = "";
 
+// ربط الزر بعد تحميل DOM
+document.addEventListener("DOMContentLoaded", ()=>{
+    document.getElementById("startBtn").addEventListener("click", startExam);
+    document.getElementById("nextBtn").addEventListener("click", nextQuestion);
+});
+
+// ===== بدء الاختبار =====
 function startExam(){
-    const name = document.getElementById("studentName").value;
-    if(name.trim()===""){
-        alert("يرجى إدخال الاسم");
-        return;
-    }
+    studentName = document.getElementById("studentName").value.trim();
+    if(!studentName){ alert("يرجى إدخال الاسم"); return; }
+    document.getElementById("login").style.display = "none";
+    document.getElementById("quiz").style.display = "block";
     loadQuestion();
 }
 
+// ===== تحميل السؤال الحالي =====
 function loadQuestion(){
-    document.getElementById("app").innerHTML = `
-        <h1>اختبار نظم التشغيل</h1>
-        <div class="progress-bar">
-            <div class="progress" style="width:${(current/quiz.length)*100}%"></div>
-        </div>
-        <div class="question">${quiz[current].question}</div>
-        <div class="answers">
-            ${quiz[current].answers.map((a,i)=>`
-                <label>
-                    <input type="radio" name="answer" value="${i}">
-                    ${a}
-                </label>`).join("")}
-        </div>
-        <br>
-        <button onclick="nextQuestion()">التالي</button>
-    `;
+    const q = quiz[current];
+    document.getElementById("questionText").innerText = (current+1)+". "+q.question;
+
+    const answersDiv = document.getElementById("answersContainer");
+    answersDiv.innerHTML = "";
+    q.answers.forEach((a,i)=>{
+        const label = document.createElement("label");
+        label.innerHTML = `<input type="radio" name="answer" value="${i}"> ${a}`;
+        answersDiv.appendChild(label);
+    });
+
+    document.getElementById("progress").style.width = ((current/quiz.length)*100) + "%";
+    document.getElementById("nextBtn").innerText = (current === quiz.length-1) ? "إنهاء الاختبار" : "التالي";
 }
 
+// ===== التالي =====
 function nextQuestion(){
     const selected = document.querySelector('input[name="answer"]:checked');
-    if(!selected){
-        alert("يرجى اختيار إجابة");
-        return;
-    }
+    if(!selected){ alert("يرجى اختيار إجابة"); return; }
 
-    if(parseInt(selected.value) === quiz[current].correct){
-        score++;
-    }
-
+    if(parseInt(selected.value) === quiz[current].correct) score++;
     current++;
-
-    if(current < quiz.length){
-        loadQuestion();
-    } else {
-        finishExam();
-    }
+    if(current < quiz.length){ loadQuestion(); }
+    else { finishExam(); }
 }
 
+// ===== إنهاء الاختبار =====
 function finishExam(){
-    document.getElementById("app").innerHTML = `
-        <h1>انتهى الاختبار</h1>
-        <div class="result">
-            درجتك: ${score} من ${quiz.length}
-        </div>
-    `;
+    document.getElementById("quiz").style.display = "none";
+    const resDiv = document.getElementById("result");
+    resDiv.style.display = "block";
+    resDiv.innerHTML = `<h1>انتهى الاختبار</h1><div class="result">${studentName}، درجتك: ${score} من ${quiz.length}</div>`;
 }
-
 </script>
-
 </body>
 </html>
