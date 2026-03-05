@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>اختبار نظم التشغيل</title>
+
+<style>
+body{
+    margin:0;
+    font-family:"Segoe UI",Tahoma;
+    background:#eef2f7;
+}
+
+.container{
+    width:800px;
+    margin:40px auto;
+    background:white;
+    padding:40px;
+    border-radius:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+
+h1{
+    text-align:center;
+    color:#1e3a5f;
+}
+
+input[type="text"]{
+    width:100%;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:16px;
+}
+
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    background:#1e3a5f;
+    color:white;
+    font-size:14px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#162b47;
+}
+
+.question{
+    font-size:18px;
+    margin-bottom:15px;
+    font-weight:bold;
+}
+
+.answers label{
+    display:block;
+    padding:10px;
+    margin:8px 0;
+    border:1px solid #ddd;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.answers label:hover{
+    background:#f2f6fb;
+}
+
+.progress-bar{
+    height:8px;
+    background:#ddd;
+    border-radius:5px;
+    margin-bottom:20px;
+}
+
+.progress{
+    height:8px;
+    background:#1e3a5f;
+    border-radius:5px;
+    width:0%;
+}
+
+.result{
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
+    margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container" id="app">
+    <h1>اختبار نظم التشغيل</h1>
+
+    <div id="login">
+        <input type="text" id="studentName" placeholder="أدخل اسمك">
+        <br><br>
+        <button onclick="startExam()">بدء الاختبار</button>
+    </div>
+</div>
+
+<script>
+
+const quiz = [
+
+{question:"أي من المستخدمين ينتهي موجه الأوامر الخاص به بالرمز # ؟",answers:["root","المستخدم المحدود","المستخدم الضيف","المستخدم العادي"],correct:0},
+{question:"يستخدم الأمر mkdir لإنشاء الملفات في نظام لينكس",answers:["صح","خطأ"],correct:1},
+{question:"ينشئ هذا الأمر ملف جديد ويجعله في وضعية الكتابة",answers:["cat > a.txt","cat a.txt","LS","cp a.txt"],correct:0},
+{question:"من مميزات استخدام سطر الأوامر ؟",answers:["أسرع وأكثر مرونة","يتطلب مساحة تخزين أكثر","ذو واجهة رسومية","كفاءة منخفضة"],correct:0},
+{question:"يعد هذا النوع من الملفات مستودع لأنواع الملفات الأخرى ؟",answers:["ملفات الدليل","الملفات العامة","سطر الأوامر","نظام التشغيل"],correct:0},
+{question:"يتم منح حقوق الوصول إلى مستوى الجذر لأي مستخدم عادي ؟",answers:["صح","خطأ"],correct:1},
+{question:"نسخة مطورة من أمر Man أكثر تفصيلاً ؟",answers:["info","cat","cp","mv"],correct:0},
+{question:"تعتبر intel من أهم الشركات المصنعة لوحدة المعالجة المركزية",answers:["صح","خطأ"],correct:0},
+{question:"ملف يحتوي على كلمات المرور المشفرة لحسابات المستخدمين",answers:["ملف shadow","ملف group","وحدة المعالجة المركزية","وحدة الحساب والمنطق"],correct:0},
+{question:"من أمثلة المتصفحات المجانية",answers:["firefox","emile","youtube","whatsapp"],correct:0},
+{question:"أمر استخراج ملفات Zip",answers:["Unzip","Zip","rmdir","cd"],correct:0},
+{question:"ضغط الملفات يعني فقط تجميعها دون تقليل الحجم",answers:["صح","خطأ"],correct:1},
+{question:"عنوان فريد يُخصص لكل جهاز متصل بالشبكة",answers:["IP","MAN","WAN","LAN"],correct:0},
+{question:"توزيعة ديبيان من أقوى توزيعات لينكس",answers:["صح","خطأ"],correct:0},
+{question:"أمر نسخ الملفات",answers:["cp","mv","cat","ls"],correct:0},
+{question:"الحرف d في drwxrwxr-x يدل على دليل",answers:["صح","خطأ"],correct:0},
+{question:"متغير بيئة لمسارات البحث",answers:["PATH","HOME","LS","PRINTF"],correct:0},
+{question:"محرر أكواد لنظام macOS",answers:["Chocolat","Vim","Brackets","Emacs"],correct:0},
+{question:"محرر نصوص يدعم البريد وFTP",answers:["Emacs","Brackets","Eclipse","Vim"],correct:0},
+{question:"أذونات المالك في drwx-wx-rx",answers:["قراءة وكتابة وتنفيذ","قراءة فقط","كتابة فقط","تنفيذ فقط"],correct:0},
+{question:"ماهي البرامج مفتوحة المصدر؟",answers:["برامج تتاح للجميع بحرية الاستخدام والتعديل","برامج لا يمكن استعمالها","برامج مكافحة ضارة","برامج خبيثة"],correct:0},
+{question:"حرق الإسطوانات يعني نسخ البيانات إلى أقراص",answers:["صح","خطأ"],correct:0},
+{question:"شبكات تمتد عبر مساحات واسعة",answers:["WAN","LAN","MAN","IP"],correct:0},
+{question:"النظام الثنائي يعتمد على 0 و1",answers:["صح","خطأ"],correct:0},
+{question:"أمر عكس عرض الملف",answers:["tac","cat","cp","mv"],correct:0},
+{question:"النواة مسؤولة عن إدارة العتاد",answers:["صح","خطأ"],correct:0},
+{question:"أمر نقل ملف",answers:["mv","cp","cat","ls"],correct:0},
+{question:"وحدة المعالجة المركزية دماغ الحاسب",answers:["صح","خطأ"],correct:0},
+{question:"لينكس يتمتع بحرية التعديل",answers:["صح","خطأ"],correct:0},
+{question:"خيار ls لعرض المخفية",answers:["-a","-r","-l","-h"],correct:0},
+{question:"إنشاء ملف بواسطة أمر",answers:["Touch","tac","cp","mv"],correct:0},
+{question:"في لينكس كل شيء ملف",answers:["صح","خطأ"],correct:0},
+{question:"لينكس لا يعمل إلا على Apple",answers:["صح","خطأ"],correct:1},
+{question:"help يعرض معلومات المساعدة",answers:["صح","خطأ"],correct:0},
+{question:"مثال نظام مفتوح المصدر",answers:["Linux","Apple","Windows","mac os"],correct:0},
+{question:"عرض المسار الكامل",answers:["pwd","mkdir","rmdir","cp"],correct:0},
+{question:"الواجهة الرسومية مقابل سطر الأوامر",answers:["صح","خطأ"],correct:0},
+{question:"السلوك الافتراضي للأمر cd",answers:["ينتقل إلى مجلد المنزل (Home)","ينتقل إلى Root","يبقى","آخر مجلد"],correct:0},
+{question:"برامج مكافحة الفيروسات هدفها تنظيف البيانات المهملة",answers:["صح","خطأ"],correct:1}
+
+];
+
+let current = 0;
+let score = 0;
+
+function startExam(){
+    const name = document.getElementById("studentName").value;
+    if(name.trim()===""){
+        alert("يرجى إدخال الاسم");
+        return;
+    }
+    loadQuestion();
+}
+
+function loadQuestion(){
+    document.getElementById("app").innerHTML = `
+        <h1>اختبار نظم التشغيل</h1>
+        <div class="progress-bar">
+            <div class="progress" style="width:${(current/quiz.length)*100}%"></div>
+        </div>
+        <div class="question">${quiz[current].question}</div>
+        <div class="answers">
+            ${quiz[current].answers.map((a,i)=>`
+                <label>
+                    <input type="radio" name="answer" value="${i}">
+                    ${a}
+                </label>`).join("")}
+        </div>
+        <br>
+        <button onclick="nextQuestion()">التالي</button>
+    `;
+}
+
+function nextQuestion(){
+    const selected = document.querySelector('input[name="answer"]:checked');
+    if(!selected){
+        alert("يرجى اختيار إجابة");
+        return;
+    }
+
+    if(parseInt(selected.value) === quiz[current].correct){
+        score++;
+    }
+
+    current++;
+
+    if(current < quiz.length){
+        loadQuestion();
+    } else {
+        finishExam();
+    }
+}
+
+function finishExam(){
+    document.getElementById("app").innerHTML = `
+        <h1>انتهى الاختبار</h1>
+        <div class="result">
+            درجتك: ${score} من ${quiz.length}
+        </div>
+    `;
+}
+
+</script>
+
+</body>
+</html>
